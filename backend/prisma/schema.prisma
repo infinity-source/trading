@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  trades    Trade[]
+  alerts    Alert[]
+}
+
+model Trade {
+  id           String      @id @default(cuid())
+  userId       String
+  symbol       String
+  type         TradeType
+  side         TradeSide
+  quantity     Float
+  entryPrice   Float
+  exitPrice    Float?
+  stopLoss     Float?
+  takeProfit   Float?
+  status       TradeStatus
+  openedAt     DateTime    @default(now())
+  closedAt     DateTime?
+  pnl          Float?
+  commission   Float       @default(0)
+  notes        String?
+  
+  user         User        @relation(fields: [userId], references: [id])
+  
+  @@map("trades")
+}
+
+model Alert {
+  id        String      @id @default(cuid())
+  userId    String
+  symbol    String
+  condition String
+  price     Float
+  message   String?
+  isActive  Boolean     @default(true)
+  triggered Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  
+  user      User        @relation(fields: [userId], references: [id])
+  
+  @@map("alerts")
+}
+
+model MarketData {
+  id        String   @id @default(cuid())
+  symbol    String
+  timeframe String
+  timestamp DateTime
+  open      Float
+  high      Float
+  low       Float
+  close     Float
+  volume    Float
+  
+  @@unique([symbol, timeframe, timestamp])
+  @@map("market_data")
+}
+
+enum TradeType {
+  MARKET
+  LIMIT
+  STOP
+}
+
+enum TradeSide {
+  BUY
+  SELL
+}
+
+enum TradeStatus {
+  OPEN
+  CLOSED
+  CANCELLED
+}
