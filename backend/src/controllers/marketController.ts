@@ -89,8 +89,8 @@ export const getTechnicalIndicators = async (req: Request, res: Response) => {
       rsi: marketDataService.calculateRSI(prices),
       macd: marketDataService.calculateMACD(prices),
       vwap: marketDataService.calculateVWAP(historicalData),
-      bollinger: marketDataService.calculateBollingerBands(prices),
-      fibonacci: marketDataService.calculateFibonacci(historicalData)
+      //bollinger: marketDataService.calculateBollingerBands(prices),
+      //fibonacci: marketDataService.calculateFibonacci(historicalData)
     };
 
     res.json({
